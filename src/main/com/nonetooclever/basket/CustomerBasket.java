@@ -1,6 +1,7 @@
 package com.nonetooclever.basket;
 import com.nonetooclever.products.Fruit;
 import com.nonetooclever.products.FruitEnum;
+import com.nonetooclever.promotions.PromotionalPriceCalc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,19 +36,37 @@ public class CustomerBasket {
         return basket.stream().mapToInt(b -> b.price).sum();
     }
 
+    static public int totalCost(List<Fruit> list) {
+        return list.stream().mapToInt(b -> b.price).sum();
+    }
+
     public String totalCostFormatted() {
         return String.format("%4d.%02d", totalCost()/100, totalCost()%100);
     }
 
+    public Map<FruitEnum, List<Fruit>> mapOfContents(){
+        return basket.stream().collect(Collectors.groupingBy(Fruit::getType));
+    }
     public void printContentsCondensed() {
-        Map<FruitEnum, List<Fruit>> mapOfContents = basket.stream()
-                .collect(Collectors.groupingBy(Fruit::getType));
+        Map<FruitEnum, List<Fruit>> mapOfContents = mapOfContents();
         // System.out.println(mapOfContents);
         for (Map.Entry<FruitEnum, List<Fruit>> entry : mapOfContents.entrySet()) {
            // System.out.println(entry.getKey() + ":" + entry.getValue());
             int totalCostPerFruit = entry.getValue().stream().mapToInt(b -> b.price).sum();
             System.out.println(entry.getKey().toString() + "(s), price " + String.format("%4d.%02d", totalCostPerFruit/100, totalCostPerFruit%100));
         }
+    }
+
+    public int totalCostPromotionalPrice(PromotionalPriceCalc calc) {
+        Map<FruitEnum, List<Fruit>> mapOfContents = mapOfContents();
+        // System.out.println(mapOfContents);
+        int total = 0;
+        for (Map.Entry<FruitEnum, List<Fruit>> entry : mapOfContents.entrySet()) {
+            // System.out.println(entry.getKey() + ":" + entry.getValue());
+            total += calc.calculatePrice(entry.getKey(), entry.getValue());
+            // System.out.println("total " + total);
+        }
+        return total;
     }
 
 }

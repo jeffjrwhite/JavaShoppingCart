@@ -1,13 +1,19 @@
 package com.nonetooclever.products;
 
+import com.nonetooclever.promotions.Promotion;
+
 import java.util.Objects;
 
 abstract public class Fruit {
 
         FruitEnum type;
         public int price;
+        public Promotion promotion = new Promotion();
 
         public FruitEnum getType() { return type; }
+        public void setPromotion(Promotion promotion){
+                this.promotion = promotion;
+        }
 
         public String toString() {
                 return String.format("%s, price %4d.%02d", type.toString(), price/100, price%100);
